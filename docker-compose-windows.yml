@@ -1,0 +1,43 @@
+services:
+
+  # Windows to install the windows_exporter with IIS-collector
+  windows:
+    image: dockurr/windows
+    container_name: windows
+    restart: unless-stopped
+    environment:
+      VERSION: "11"
+      LANGUAGE: "German"
+      REGION: "de-DE"
+      KEYBOARD: "de-DE"
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8006:8006
+      - 9182:9182
+      - 3389:3389/tcp
+      - 3389:3389/udp
+    stop_grace_period: 2m
+    volumes:
+      - windows-storage:/storage
+      - ./windows/:/oem  # post-installation script
+
+  prometheus-windows:
+    image: prom/prometheus:v3.1.0
+    container_name: prometheus-windows
+    restart: unless-stopped
+    networks: [ default, grafana-shared ]
+    ports:
+      - 9091:9090
+    volumes:
+      - ./prometheus/prometheus-windows.yml:/etc/prometheus/prometheus.yml
+
+volumes:
+  windows-storage:
+
+networks:
+  grafana-shared:
+    external: true

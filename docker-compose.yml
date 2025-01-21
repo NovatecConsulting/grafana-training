@@ -1,0 +1,35 @@
+services:
+
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    container_name: prometheus
+    restart: unless-stopped
+    networks: [ grafana-shared ]
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus:/etc/prometheus
+    extra_hosts:
+      - local:host-gateway # access local node exporter
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    attach: false
+    container_name: grafana
+    restart: unless-stopped
+    networks: [ grafana-shared ]
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning:/usr/share/grafana/custom/
+    environment:
+      - GF_PATHS_PROVISIONING=/usr/share/grafana/custom/
+      - GF_SECURITY_ADMIN_PASSWORD=training
+
+volumes:
+  grafana-storage:
+
+networks:
+  grafana-shared:
+    external: true
