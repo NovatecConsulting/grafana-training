@@ -33,7 +33,7 @@ services:
     ports:
       - 9091:9090
     volumes:
-      - ./prometheus/prometheus-windows.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus-windows.yml:/etc/prometheus/prometheus.yml
 
 volumes:
   windows-storage:

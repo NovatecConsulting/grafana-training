@@ -8,7 +8,7 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./prometheus:/etc/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     extra_hosts:
       - local:host-gateway # access local node exporter
 
