@@ -4,7 +4,6 @@ services:
     image: prom/prometheus:v3.1.0
     container_name: prometheus
     restart: unless-stopped
-    networks: [ grafana-shared ]
     ports:
       - 9090:9090
     volumes:
@@ -17,7 +16,6 @@ services:
     attach: false
     container_name: grafana
     restart: unless-stopped
-    networks: [ grafana-shared ]
     ports:
       - 3000:3000
     volumes:
@@ -31,5 +29,6 @@ volumes:
   grafana-storage:
 
 networks:
-  grafana-shared:
+  default:
+    name: grafana-shared
     external: true
