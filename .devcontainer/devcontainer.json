@@ -23,7 +23,7 @@
 	 ],
 
 	// Install docker compose, create docker network, set up node-exporter
-	"postCreateCommand": "sudo apt-get update && sudo apt-get install -y docker-compose && docker network create grafana-shared && chmod +x node_exporter_setup.sh && ./node/node_exporter_setup.sh",
+	"postCreateCommand": "sudo apt-get update && sudo apt-get install -y docker-compose && docker network create grafana-shared && chmod +x node/node_exporter_setup.sh && ./node/node_exporter_setup.sh",
 
 	// Configure tool-specific properties.
 	 "customizations": {
