@@ -1,8 +1,9 @@
 apiVersion: 1
 datasources:
   - orgId: 1
-    name: Prometheus Windows
+    name: Prometheus
     type: prometheus
     access: proxy
+    isDefault: true
     editable: true
-    url: http://prometheus-windows:9090
+    url: http://prometheus:9090 

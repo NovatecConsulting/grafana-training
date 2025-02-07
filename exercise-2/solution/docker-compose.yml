@@ -1,34 +1,38 @@
 services:
 
+  filestat-exporter:
+    image: mdoubez/filestat_exporter:0.4.0
+    restart: unless-stopped
+    volumes:
+      - ./filestat:/exporter/data
+    command: ["-path.cwd", "/exporter/data", "**/*"]
+
   prometheus:
     image: prom/prometheus:v3.1.0
-    container_name: prometheus
     restart: unless-stopped
     ports:
       - 9090:9090
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-shared:/prometheus
     extra_hosts:
       - local:host-gateway # access local node exporter
 
   grafana:
     image: grafana/grafana:11.2.0
     attach: false
-    container_name: grafana
     restart: unless-stopped
     ports:
       - 3000:3000
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./grafana/provisioning:/usr/share/grafana/custom/
+      - ./grafana/dashboards:/usr/share/grafana/public/dashboards
     environment:
       - GF_PATHS_PROVISIONING=/usr/share/grafana/custom/
       - GF_SECURITY_ADMIN_PASSWORD=training
 
 volumes:
   grafana-storage:
-
-networks:
-  default:
-    name: grafana-shared
+  prometheus-shared:
     external: true
