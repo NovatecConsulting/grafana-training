@@ -1,0 +1,68 @@
+services:
+
+  # Windows to install the windows_exporter with IIS-collector
+  # Installation will take several minutes
+  windows:
+    image: dockurr/windows
+    restart: unless-stopped
+    environment:
+      VERSION: "11"
+      LANGUAGE: "German"
+      REGION: "de-DE"
+      KEYBOARD: "de-DE"
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8006:8006
+      - 9182:9182
+      - 3389:3389/tcp
+      - 3389:3389/udp
+    stop_grace_period: 2m
+    volumes:
+      - windows-storage:/storage
+      - ./windows/:/oem  # post-installation script
+
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.25.0
+    restart: unless-stopped
+
+  filestat-exporter:
+    image: mdoubez/filestat_exporter:0.4.0
+    restart: unless-stopped
+    volumes:
+      - ./filestat:/exporter/data
+    command: ["-path.cwd", "/exporter/data", "**/*"]
+
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    restart: unless-stopped
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-shared:/prometheus
+    extra_hosts:
+      - local:host-gateway # access local node exporter
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    attach: false
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning:/usr/share/grafana/custom/
+      - ./grafana/dashboards:/usr/share/grafana/public/dashboards
+    environment:
+      - GF_PATHS_PROVISIONING=/usr/share/grafana/custom/
+      - GF_SECURITY_ADMIN_PASSWORD=training
+
+volumes:
+  grafana-storage:
+  windows-storage:
+  prometheus-shared:
+    external: true
